@@ -16,14 +16,14 @@ g3 <- t(g2)
 
 #To determine the best number of clusters
 res.nbclust2 <- NbClust(g, distance = 'euclidean',
-          min.nc = 2, max.nc = 10, 
-          method = "complete", index ="all")
+                min.nc = 2, max.nc = 10, 
+                method = "complete", index ="all")
 fviz_nbclust(res.nbclust, ggtheme = theme_minimal())
 
 #Set up heat map
 col_fun <- colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
 lgd <- heatmap_legend_param=list(title='Concentration (mm)', 
-    at = c(-3, -2, -1, 0, 1, 2, 3))
+       at = c(-3, -2, -1, 0, 1, 2, 3))
 
 g_heat <- Heatmap(g3, cluster_columns=FALSE, row_km=3, 
                    column_title = 'Time (d)', column_title_side='bottom', 
