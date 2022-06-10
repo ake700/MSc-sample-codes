@@ -1,0 +1,53 @@
+#Based in Ubuntu - Windows Subsystem for Linux 
+
+#Set up QIIME2
+conda activate qiime2-2021.8
+
+#Converting FASTQ files to artifacts based on Casava 1.8 paired-end demultiplexed fastq protocol (https://docs.qiime2.org/2021.8/tutorials/importing/#importing-seqs)
+#Download and unzip casava-18-paired-end-demultiplexed.zip
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path casava-18-paired-end-demultiplexed \
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --output-path demux-paired-end.qza
+  
+#Denoising
+qiime dada2 denoise-paired \ 
+  --i-demultiplexed-seqs demux-full.qza \ #trims first left or right sequences by 13 bases; reads need to be long enough to overlap when joining paired ends 
+  --p-trim-left-f 13 \ 
+  --p-trim-left-r 13 \ #150-base reads  
+  --p-trunc-len-f 150 \ 
+  --p-trunc-len-r 150 \ 
+  --o-table table.qza #feature table \ 
+  --o-representative-sequences rep-seqs.qza #feature sequences\ 
+  --o-denoising-stats denoising-stats.qza #DADA2 denoising stats
+
+#FeatureTable and FeatureData summaries
+qiime feature-table summarize \  
+  --i-table table.qza \  
+  --o-visualization table.qzv \ 
+  --m-sample-metadata-file sample-metadata.tsv \ 
+qiime feature-table tabulate-seqs \  
+  --i-data rep-seqs.qza \  
+  --o-visualization rep-seqs.qzv
+  
+#Generate phylogenetic diversity analyses
+qiime phylogeny align-to-tree-mafft-fasttree \ #generates tree
+  --i-sequences rep-seqs.qza \ #sequence input
+ 	--o-alignment aligned-rep-seqs.qza \ #performs multiple sequence alignment of the sequences in rep-seq
+  --o-masked-alignment masked-aligned-rep-seqs.qza \ #removes positions that are highly variable as they add noise to a tree
+ 	--o-tree unrooted-tree.qza \ 
+  --o-rooted-tree rooted-tree.qza # midpoint rooting is applied to place the root of the tree at the midpoint of the longest tip-to-tip distance in the unrooted tree.
+
+qiime feature-classifier classify-sklearn \
+  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \ #Using pre-trained Naïve Bayes classifier trained on these OTUs to include 250 bases from region of v4 16S 515F/806R 
+  --i-reads rep-seqs.qza \
+  --o-classification taxonomy.qza
+qiime metadata tabulate \
+  --m-input-file taxonomy.qza \
+  --o-visualization taxonomy.qzv
+
+#Exporting for R (based on https://gist.github.com/erictleung/eda33bceceebb190eb9a44c93a077d32)
+qiime tools export –input-path table.qza –output-path [] #Change #OTUID to OTUID
+qiime tools export –input-path taxonomy.qza –output-path [] #change feature ID to OTUID to match OTU table above
+qiime tools export –input-path unrooted-tree.qza –output-path []
