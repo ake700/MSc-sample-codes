@@ -10,14 +10,17 @@ qiime tools import \
   --input-path casava-18-paired-end-demultiplexed \
   --input-format CasavaOneEightSingleLanePerSampleDirFmt \
   --output-path demux-paired-end.qza
-  
+
+#Check paired ends for denoising
+qiime demux summarize \ --i-data demux-paired-end.qza –o-visualization demux-paired-end.qzv
+
 #Denoising
 qiime dada2 denoise-paired \ 
-  --i-demultiplexed-seqs demux-full.qza \ #trims first left or right sequences by 13 bases; reads need to be long enough to overlap when joining paired ends 
-  --p-trim-left-f 13 \ 
-  --p-trim-left-r 13 \ #150-base reads  
-  --p-trunc-len-f 150 \ 
-  --p-trunc-len-r 150 \ 
+  --i-demultiplexed-seqs demux-full.qza \ #trims first left or right sequences by some amount of bases; reads need to be long enough to overlap when joining paired ends 
+  --p-trim-left-f 25 \ 
+  --p-trim-left-r 9 \ #150-base reads  
+  --p-trunc-len-f 290 \ 
+  --p-trunc-len-r 190 \ 
   --o-table table.qza #feature table \ 
   --o-representative-sequences rep-seqs.qza #feature sequences\ 
   --o-denoising-stats denoising-stats.qza #DADA2 denoising stats
@@ -39,8 +42,11 @@ qiime phylogeny align-to-tree-mafft-fasttree \ #generates tree
  	--o-tree unrooted-tree.qza \ 
   --o-rooted-tree rooted-tree.qza # midpoint rooting is applied to place the root of the tree at the midpoint of the longest tip-to-tip distance in the unrooted tree.
 
+#Classify taxa
+#Get Silva reference database for Naïve Bayes classification
+wget -o "silva-138-99-515-806-nb-classifier.qza" "https://data.qiime2.org/2021.8/common/silva-138-99-515-806-nb-classifier.qza"
 qiime feature-classifier classify-sklearn \
-  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \ #Using pre-trained Naïve Bayes classifier trained on these OTUs to include 250 bases from region of v4 16S 515F/806R 
+  --i-classifier silva-138-99-515-806-nb-classifier.qza \
   --i-reads rep-seqs.qza \
   --o-classification taxonomy.qza
 qiime metadata tabulate \
