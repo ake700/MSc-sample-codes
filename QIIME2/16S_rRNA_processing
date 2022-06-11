@@ -16,8 +16,8 @@ qiime demux summarize \ --i-data demux-paired-end.qza –o-visualization demux-p
 
 #Denoising
 qiime dada2 denoise-paired \ 
-  --i-demultiplexed-seqs demux-full.qza \ #trims first left or right sequences by some amount of bases; reads need to be long enough to overlap when joining paired ends 
-  --p-trim-left-f 25 \ 
+  --i-demultiplexed-seqs demux-full.qza \ #trims first left or right sequences by some amount of bases
+  --p-trim-left-f 25 \ #reads need to overlap when joining paired ends 
   --p-trim-left-r 9 \ #150-base reads  
   --p-trunc-len-f 290 \ 
   --p-trunc-len-r 190 \ 
