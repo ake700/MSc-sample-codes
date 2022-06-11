@@ -4,6 +4,7 @@
 conda activate qiime2-2021.8
 
 #Converting FASTQ files to artifacts based on Casava 1.8 paired-end demultiplexed fastq protocol (https://docs.qiime2.org/2021.8/tutorials/importing/#importing-seqs)
+
 #Download and unzip casava-18-paired-end-demultiplexed.zip
 qiime tools import \
   --type 'SampleData[PairedEndSequencesWithQuality]' \
@@ -12,7 +13,9 @@ qiime tools import \
   --output-path demux-paired-end.qza
 
 #Check paired ends for denoising
-qiime demux summarize \ --i-data demux-paired-end.qza –o-visualization demux-paired-end.qzv
+qiime demux summarize \ 
+  --i-data demux-paired-end.qza \
+  --o-visualization demux-paired-end.qzv
 
 #Denoising
 qiime dada2 denoise-paired \ 
@@ -40,7 +43,7 @@ qiime phylogeny align-to-tree-mafft-fasttree \ #generates tree
  	--o-alignment aligned-rep-seqs.qza \ #performs multiple sequence alignment of the sequences in rep-seq
   --o-masked-alignment masked-aligned-rep-seqs.qza \ #removes positions that are highly variable as they add noise to a tree
  	--o-tree unrooted-tree.qza \ 
-  --o-rooted-tree rooted-tree.qza # midpoint rooting is applied to place the root of the tree at the midpoint of the longest tip-to-tip distance in the unrooted tree.
+  --o-rooted-tree rooted-tree.qza 
 
 #Classify taxa
 #Get Silva reference database for Naïve Bayes classification
