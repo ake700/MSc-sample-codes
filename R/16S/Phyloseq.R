@@ -1,3 +1,5 @@
+library("phyloseq")
+
 #Read in OTU tables
 otu <- read.table(file="shime_otu_table.txt", header=TRUE)
 
