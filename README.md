@@ -21,5 +21,5 @@ Figure highlights include the following:
 5) Principal Coordinates Analysis of microbial diversity
 ![Comparison of microbial diversity](https://www.frontiersin.org/files/Articles/947624/fmicb-13-947624-HTML/image_m/fmicb-13-947624-g008.jpg)
 
-6) Heatmap and hierarchical clustering of correlation between metabolitse and microbes
+6) Heatmap and hierarchical clustering of correlation between metabolites and microbial composition
 ![Relationships between select metabolites and microbes](https://www.frontiersin.org/files/Articles/947624/fmicb-13-947624-HTML/image_m/fmicb-13-947624-g009.jpg)
